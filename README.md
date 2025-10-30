@@ -1,6 +1,6 @@
 # DeltaStrik
 
-A modern, terminal-based chat interface for Ollama, built with Python and Textual.
+An experimental terminal chat client for Ollama, developed in Python using the Textual framework.
 
 ## Features
 
@@ -52,7 +52,7 @@ python -m build
 
 ## License
 
-[Add your license here]
+MIT
 
 ## Contributing
 
