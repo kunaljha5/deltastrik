@@ -1,0 +1,32 @@
+/* deltastrik/tui/deltastrik.tcss */
+
+/* Layout container */
+#main-layout {
+    layout: vertical;
+    height: 100%;
+}
+
+/* Chat view: takes most of the space */
+ChatView {
+    height: 1fr;
+    padding: 1;
+    border: round $accent;
+    overflow: auto;
+}
+
+/* Input bar: fixed height */
+InputBar {
+    height: 3;
+    border-top: solid $accent;
+    padding-left: 1;
+    padding-right: 1;
+}
+
+/* Status bar: tiny footer */
+StatusBar {
+    height: 1;
+    background: $boost;
+    color: $text-muted;
+    padding-left: 1;
+    text-style: italic;
+}
