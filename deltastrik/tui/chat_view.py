@@ -35,6 +35,20 @@ class ChatView(VerticalScroll):
         new_messages.append((role, content))
         self.messages = new_messages
 
+    def add_processing_indicator(self):
+        """Add a temporary processing indicator."""
+        new_messages = self.messages.copy()
+        new_messages.append(("processing", "● Processing your request..."))
+        self.messages = new_messages
+
+    def remove_processing_indicator(self):
+        """Remove the processing indicator if it exists."""
+        new_messages = self.messages.copy()
+        # Remove the last message if it's a processing indicator
+        if new_messages and new_messages[-1][0] == "processing":
+            new_messages.pop()
+        self.messages = new_messages
+
     async def watch_messages(self, _):
         """Automatically scroll to bottom whenever new messages appear."""
         # Update content widget
@@ -83,6 +97,11 @@ class ChatView(VerticalScroll):
                 header = Text("System:", style="bold yellow")
                 body = Text.from_markup(content)
                 rendered.append(Panel(body, title=header, border_style="yellow", expand=False))
+
+            elif role == "processing":
+                header = Text("Status:", style="bold magenta")
+                body = Text.from_markup(f"[italic]{content}[/italic]")
+                rendered.append(Panel(body, title=header, border_style="magenta dim", expand=False))
 
             else:  # assistant
                 header = Text("DeltaStrik:", style="bold green")

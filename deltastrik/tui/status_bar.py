@@ -29,10 +29,19 @@ class StatusBar(Widget):
         """
         Called automatically by Textual when any reactive property changes.
         """
+        # Add indicator based on status
+        status_indicator = ""
+        if self.status.lower() == "thinking...":
+            status_indicator = "⏳ "
+        elif self.status.lower() == "ready":
+            status_indicator = "✓ "
+        elif "error" in self.status.lower():
+            status_indicator = "✗ "
+
         # Build parts
         parts = [
             f"Model: {self.model_name}",
-            f"Status: {self.status}",
+            f"{status_indicator}{self.status}",
         ]
 
         if self.latency_ms is not None:

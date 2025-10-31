@@ -5,6 +5,7 @@ Uses Textual to provide a structured chat-like terminal UI.
 """
 
 import time
+import asyncio
 from textual.app import App, ComposeResult
 from textual.containers import Vertical
 from textual import events
@@ -79,7 +80,12 @@ class DeltaStrikApp(App):
             return
         # Display user message
         self.chat_view.add_message("user", user_text)
+        # Show processing indicator
+        self.chat_view.add_processing_indicator()
         self.status_bar.update_status("Thinking...")
+
+        # Yield to event loop to allow UI to update before blocking API call
+        await asyncio.sleep(0.01)
 
         start = time.time()
         try:
@@ -93,10 +99,14 @@ class DeltaStrikApp(App):
             self.session.add_assistant_message(response)
             latency = int((time.time() - start) * 1000)
 
+            # Remove processing indicator before showing response
+            self.chat_view.remove_processing_indicator()
             self.chat_view.add_message("assistant", response)
             self.status_bar.update_status("Ready", latency)
 
         except Exception as e:
+            # Remove processing indicator before showing error
+            self.chat_view.remove_processing_indicator()
             self.chat_view.add_message("assistant", f"[red]Error:[/red] {e}")
             self.status_bar.update_status("Error")
 
