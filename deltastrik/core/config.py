@@ -8,4 +8,5 @@ def load_config():
         "model": "gpt-oss:latest",
         "temperature": 0.7,
         "max_tokens": 1024,
+        "timeout": 10
     }

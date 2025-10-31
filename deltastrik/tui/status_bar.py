@@ -10,15 +10,17 @@ from textual.reactive import reactive
 from rich.text import Text
 from deltastrik.core.config import load_config
 
-model_config = load_config()
+model_name: str = load_config()["model"]
+connection_status: str = load_config().get("connection_status", "Active")
+
 
 class StatusBar(Widget):
     """
     Displays model name, connection status, and latency.
     """
 
-    model_name: str = reactive(model_config.get("model"))
-    connection_status: str = reactive(model_config.get("connection_status"))
+    model_name: str = reactive(model_name)
+    connection_status: str = reactive(connection_status)
     status: str = reactive("Ready")         # e.g. "Ready", "Thinking", "Error"
     latency_ms: int | None = reactive(None) # e.g. 320
 

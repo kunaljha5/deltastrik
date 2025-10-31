@@ -56,7 +56,7 @@ class CommandHandler:
     def _handle_init(self, args) -> str:
         self.session.clear_history()
         new_prompt = self.build_system_prompt({})
-        logger.debug("Session reinitialized with new system prompt.")
+        logger.debug(f"Session reinitialized with new system prompt. {new_prompt}")
         return "[green]Session reset.[/green] System prompt reloaded."
 
 

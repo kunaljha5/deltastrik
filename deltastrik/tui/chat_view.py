@@ -11,6 +11,8 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
 from rich.console import Group
+from typing import Any
+from typing import Union
 
 
 class ChatView(VerticalScroll):
@@ -18,7 +20,7 @@ class ChatView(VerticalScroll):
     A scrollable chat display area that renders user and assistant messages.
     """
 
-    messages = reactive(list)
+    messages: Any = reactive(list)
 
     def on_mount(self):
         """Called when the widget is mounted."""
@@ -69,8 +71,9 @@ class ChatView(VerticalScroll):
 
     def _render_messages(self):
         """Render chat messages using Rich components."""
-        rendered = []
+        rendered: list[Union[Panel, Text]] = []
         for i, (role, content) in enumerate(self.messages):
+            body: Union[Text, Markdown]
             if role == "user":
                 header = Text("You:", style="bold cyan")
                 body = Text.from_markup(content)
@@ -91,6 +94,6 @@ class ChatView(VerticalScroll):
 
             # Add spacing between messages (except after the last one)
             if i < len(self.messages) - 1:
-                rendered.append(Text(""))  # Empty line for spacing
+                rendered.append(Text(""))
 
         return Group(*rendered) if rendered else Text("")

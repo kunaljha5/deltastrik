@@ -13,6 +13,7 @@ class OllamaClient:
         self.temperature = config.get("temperature", 0.7)
         self.max_tokens = config.get("max_tokens", 1024)
         self.stream = config.get("stream", False)
+        self.timeout = config.get("timeout", 10)
 
     def query(self, prompt: str, user_message: str, history: Optional[List[Dict[str, str]]] = None) -> str:
         messages = self._build_message_payload(prompt, user_message, history)
@@ -29,7 +30,7 @@ class OllamaClient:
             logger.debug(f"Hitting Ollama at: {url_test}")
             logger.debug(f"Payload: {payload}")
 
-            response = requests.post(url=url_test, json=payload)
+            response = requests.post(url=url_test, json=payload, timeout=self.timeout)
             logger.info(f"Ollama response status: {response.status_code}")
             logger.debug(f"Ollama raw response: {response.text}")
 

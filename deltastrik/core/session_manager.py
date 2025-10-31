@@ -18,7 +18,8 @@ class SessionManager:
         # Chat history follows the typical OpenAI/Ollama format:
         # [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
         self.history: List[Dict[str, str]] = []
-        self.created_at = datetime.datetime.now(datetime.timezone.utc)
+        self.created_at: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
+
 
     # ----------------------------------------------------------
     # Message management
@@ -57,10 +58,21 @@ class SessionManager:
             "history": self.history,
         }
 
-    def load_from(self, session_data: Dict[str, Any]):
+    # def load_from(self, session_data: Dict[str, Any]):
+    #     """Load an existing session from serialized data."""
+    #     self.history = session_data.get("history", [])
+    #     self.created_at = datetime.datetime.fromisoformat(session_data.get("created_at"))
+    def load_from(self, session_data: Dict[str, Any]) -> None:
         """Load an existing session from serialized data."""
         self.history = session_data.get("history", [])
-        self.created_at = datetime.datetime.fromisoformat(session_data.get("created_at"))
+
+        created_at_raw = session_data.get("created_at")
+        if isinstance(created_at_raw, str):
+            # Only parse valid string values
+            self.created_at = datetime.datetime.fromisoformat(created_at_raw)
+        else:
+            # Fallback to current UTC time if missing or invalid
+            self.created_at = datetime.datetime.now(datetime.timezone.utc)
 
     def clear_history(self):
         """Clear chat history."""

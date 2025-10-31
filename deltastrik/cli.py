@@ -1,6 +1,6 @@
 # deltastrik/cli.py
 
-import sys
+# import sys
 from deltastrik.tui.app import DeltaStrikApp
 from deltastrik.core.config import load_config
 
