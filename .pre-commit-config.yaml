@@ -19,3 +19,8 @@ repos:
     rev: v1.18.2
     hooks:
       - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
+        types: [ python ]
+        require_serial: true
