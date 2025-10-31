@@ -9,6 +9,7 @@ from textual.widget import Widget
 from textual.reactive import reactive
 from rich.text import Text
 from deltastrik.core.config import load_config
+from typing import Any
 
 model_name: str = load_config()["model"]
 connection_status: str = load_config().get("connection_status", "Active")
@@ -19,10 +20,10 @@ class StatusBar(Widget):
     Displays model name, connection status, and latency.
     """
 
-    model_name: str = reactive(model_name)
-    connection_status: str = reactive(connection_status)
-    status: str = reactive("Ready")  # e.g. "Ready", "Thinking", "Error"
-    latency_ms: int | None = reactive(None)  # e.g. 320
+    model_name: Any = reactive(model_name)
+    connection_status: Any = reactive(connection_status)
+    status: Any = reactive("Ready")  # e.g. "Ready", "Thinking", "Error"
+    latency_ms: Any | None = reactive(None)  # e.g. 320
 
     def render(self) -> Text:
         """
