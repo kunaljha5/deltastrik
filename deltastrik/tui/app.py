@@ -24,6 +24,11 @@ class DeltaStrikApp(App):
 
     CSS_PATH = "deltastrik.tcss"  # Path to Textual CSS
 
+    # Keybindings for the app
+    BINDINGS = [
+        ("ctrl+m", "toggle_mouse", "Toggle Mouse Capture"),
+    ]
+
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -36,6 +41,7 @@ class DeltaStrikApp(App):
             build_system_prompt,
             app=self,
         )
+        self.mouse_capture_enabled = True
 
     def compose(self) -> ComposeResult:
         """Declare the TUI layout."""
@@ -51,6 +57,29 @@ class DeltaStrikApp(App):
     async def on_mount(self) -> None:
         """Set initial focus on the input bar when app starts."""
         self.input_bar.focus()
+        # Show initial hint about copying
+        self.status_bar.update_status("Ready • Hold Shift to select/copy text")
+
+    def action_toggle_mouse(self) -> None:
+        """Show information about text copying."""
+        help_message = """[bold cyan]How to copy text from DeltaStrik:[/bold cyan]
+
+[bold]Method 1:[/bold] Hold [yellow]Shift[/yellow] key while selecting text with your mouse
+  • Works in most modern terminals (iTerm2, Terminal.app, Windows Terminal, etc.)
+  • Bypasses mouse capture temporarily
+
+[bold]Method 2:[/bold] Use your terminal's keyboard shortcuts
+  • macOS: Cmd+C after selecting with Shift held
+  • Linux/Windows: Ctrl+Shift+C or right-click menu
+
+[bold]Method 3:[/bold] Use terminal-specific features
+  • iTerm2: Cmd+Option+drag to select
+  • tmux: Enter copy mode with prefix + [
+
+[bold]Tip:[/bold] If Shift doesn't work, check your terminal's settings for mouse capture bypass keys."""
+
+        self.chat_view.add_message("system", help_message)
+        self.status_bar.update_status("Check chat for copy instructions")
 
     async def on_key(self, event: events.Key) -> None:
         """Handle global key bindings for focus management."""
@@ -89,7 +118,9 @@ class DeltaStrikApp(App):
 
         start = time.time()
         try:
-            response = self.client.query(
+            # Run the blocking HTTP call in a background thread to keep UI responsive
+            response = await asyncio.to_thread(
+                self.client.query,
                 prompt=self.system_prompt,
                 user_message=user_text,
                 history=self.session.history,

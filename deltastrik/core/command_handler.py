@@ -36,8 +36,13 @@ class CommandHandler:
             return self._handle_init(args)
         elif command == "/clear":
             return self._handle_clear()
+        elif command == "/copy":
+            return self._handle_copy()
         elif command in ["/exit", "/quit", "exit", "quit"]:
             return self._handle_exit()
+        elif command == "/compact":
+            result = self.session.compact(args)
+            return result
         else:
             return f"[Unknown command: {command}] Try /help for available commands."
 
@@ -48,10 +53,12 @@ class CommandHandler:
     def _handle_help() -> str:
         help_text = """[bold cyan]Available commands:[/bold cyan]
 
-      /help   - Show this help message  
-      /init   - Reset conversation and reload system prompt  
-      /clear  - Clear chat history in this session
-      /exit   - Exit the current session
+      /help    - Show this help message
+      /init    - Reset conversation and reload system prompt
+      /clear   - Clear chat history in this session
+      /copy    - Show instructions for copying text (or press Ctrl+M)
+      /exit    - Exit the current session
+      /compact - Summarize only the reasoning steps and design choices
     """
         return help_text
 
@@ -65,6 +72,13 @@ class CommandHandler:
         self.session.clear_history()
         logger.debug("Chat history cleared.")
         return "[green]Chat cleared.[/green]"
+
+    def _handle_copy(self) -> str:
+        """Show instructions for copying text from the TUI."""
+        if self.app:
+            self.app.action_toggle_mouse()
+            return ""  # Message is shown by the action itself
+        return "[yellow]Copy instructions unavailable.[/yellow]"
 
     def _handle_exit(self) -> str:
         """Exit the TUI gracefully."""

@@ -7,6 +7,43 @@ Supports command history navigation with up/down arrow keys.
 
 from textual.widgets import Input
 from textual import events
+from textual.suggester import Suggester
+
+
+class CommandSuggester(Suggester):
+    """
+    Suggester for slash commands.
+    Provides autocomplete suggestions when user types commands starting with '/'.
+    """
+
+    # Available commands with descriptions
+    COMMANDS = {
+        "/help": "Show available commands",
+        "/init": "Reset conversation and reload system prompt",
+        "/clear": "Clear chat history",
+        "/copy": "Show instructions for copying text",
+        "/exit": "Exit the application",
+        "/quit": "Exit the application",
+    }
+
+    async def get_suggestion(self, value: str) -> str | None:
+        """
+        Return a suggestion based on the current input value.
+        Only suggests when input starts with '/'.
+        """
+        if not value or not value.startswith("/"):
+            return None
+
+        # Convert input to lowercase for case-insensitive matching
+        value_lower = value.lower()
+
+        # Find the first command that starts with the input
+        for command in self.COMMANDS:
+            if command.startswith(value_lower) and command != value_lower:
+                # Return the rest of the command (after what user already typed)
+                return command
+
+        return None
 
 
 class InputBar(Input):
@@ -16,7 +53,10 @@ class InputBar(Input):
     """
 
     def __init__(self, max_history: int = 100):
-        super().__init__(placeholder="Type your message here...")
+        super().__init__(
+            placeholder="Type your message here... (Use / for commands)",
+            suggester=CommandSuggester(use_cache=False, case_sensitive=False),
+        )
         self.command_history: list[str] = []  # Stores previous commands
         self.history_index: int = -1  # Current position in history (-1 = not browsing)
         self.current_draft: str = ""  # Preserves what user is typing

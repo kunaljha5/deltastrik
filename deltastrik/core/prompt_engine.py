@@ -8,6 +8,11 @@ import os
 import yaml
 from datetime import datetime
 from typing import Dict, Any, Optional
+from deltastrik.core.config import load_config
+
+
+model: str = load_config().get("model")
+
 
 
 DEFAULT_PERSONA = """
@@ -43,11 +48,10 @@ def build_system_prompt(config: Optional[Dict[str, Any]] = None) -> str:
 
     # Step 3: add runtime context (optional but nice)
     date_info = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
-    model_name = config.get("model", "llama3")
 
     system_prompt = (
         f"{persona_text.strip()}\n\n"
-        f"[Context: Running on model '{model_name}' at {date_info}]\n"
+        f"[Context: Running on model '{model}' at {date_info}]\n"
     )
 
     return system_prompt

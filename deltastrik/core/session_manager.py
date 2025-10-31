@@ -7,6 +7,8 @@ conversation context between the user and the LLM (Ollama backend).
 
 from typing import List, Dict, Any
 import datetime
+from deltastrik.core.prompt_engine import build_system_prompt
+from deltastrik.core.ollama_client import OllamaClient
 
 
 class SessionManager:
@@ -76,3 +78,37 @@ class SessionManager:
     def clear_history(self):
         """Clear chat history."""
         self.history = []
+
+    def compact(self, instructions: str | None = None) -> str:
+        """
+        Summarize and compact the chat history into a single system summary.
+        """
+        if not self.history:
+            return "⚠️ No history to compact."
+
+        # Step 1: Build summarization prompt
+        summary_prompt = (
+            "Summarize the following conversation in a way that retains all essential "
+            "context, goals, and facts for future continuation.\n"
+        )
+        if instructions:
+            summary_prompt += f"\nAdditional instructions: {instructions}\n"
+
+        summary_prompt += "\n--- Conversation ---\n"
+        for msg in self.history:
+            summary_prompt += f"{msg['role']}: {msg['content']}\n"
+
+        # Step 2: Call local model to summarize
+        ollama = OllamaClient()
+        system_prompt = build_system_prompt()
+        summary_response = ollama.generate(
+            system_prompt + "\n\n" + summary_prompt
+        )
+
+        summary_text = summary_response.strip()
+
+        # Step 3: Replace full history with summary as system message
+        self.history = [{"role": "system", "content": summary_text}]
+        self.save_session()
+
+        return "✅ Conversation compacted. Summary retained in system context."
