@@ -13,6 +13,7 @@ class CommandHandler:
     """
     Central place to handle slash commands entered by the user.
     """
+
     def __init__(self, session_manager, client, system_prompt_builder=None, app=None):
         self.session = session_manager
         self.client = client
@@ -53,12 +54,12 @@ class CommandHandler:
       /exit   - Exit the current session
     """
         return help_text
+
     def _handle_init(self, args) -> str:
         self.session.clear_history()
         new_prompt = self.build_system_prompt({})
         logger.debug(f"Session reinitialized with new system prompt. {new_prompt}")
         return "[green]Session reset.[/green] System prompt reloaded."
-
 
     def _handle_clear(self) -> str:
         self.session.clear_history()

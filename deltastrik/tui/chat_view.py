@@ -38,7 +38,7 @@ class ChatView(VerticalScroll):
     async def watch_messages(self, _):
         """Automatically scroll to bottom whenever new messages appear."""
         # Update content widget
-        if hasattr(self, 'content_widget'):
+        if hasattr(self, "content_widget"):
             self.content_widget.update(self._render_messages())
             # Use multiple scroll attempts with delays to handle large content rendering
             self.set_timer(0.05, self._scroll_to_bottom)

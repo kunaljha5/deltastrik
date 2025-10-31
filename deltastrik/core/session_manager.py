@@ -20,7 +20,6 @@ class SessionManager:
         self.history: List[Dict[str, str]] = []
         self.created_at: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
 
-
     # ----------------------------------------------------------
     # Message management
     # ----------------------------------------------------------

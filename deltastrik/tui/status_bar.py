@@ -21,8 +21,8 @@ class StatusBar(Widget):
 
     model_name: str = reactive(model_name)
     connection_status: str = reactive(connection_status)
-    status: str = reactive("Ready")         # e.g. "Ready", "Thinking", "Error"
-    latency_ms: int | None = reactive(None) # e.g. 320
+    status: str = reactive("Ready")  # e.g. "Ready", "Thinking", "Error"
+    latency_ms: int | None = reactive(None)  # e.g. 320
 
     def render(self) -> Text:
         """
