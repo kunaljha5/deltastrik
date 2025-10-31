@@ -61,3 +61,7 @@ class SessionManager:
         """Load an existing session from serialized data."""
         self.history = session_data.get("history", [])
         self.created_at = datetime.datetime.fromisoformat(session_data.get("created_at"))
+
+    def clear_history(self):
+        """Clear chat history."""
+        self.history = []

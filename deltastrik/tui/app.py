@@ -7,12 +7,14 @@ Uses Textual to provide a structured chat-like terminal UI.
 import time
 from textual.app import App, ComposeResult
 from textual.containers import Vertical
+from textual import events
 from deltastrik.tui.chat_view import ChatView
 from deltastrik.tui.input_bar import InputBar
 from deltastrik.tui.status_bar import StatusBar
 from deltastrik.core.session_manager import SessionManager
 from deltastrik.core.ollama_client import OllamaClient
 from deltastrik.core.prompt_engine import build_system_prompt
+from deltastrik.core.command_handler import CommandHandler
 from textual.widgets import Input
 
 
@@ -27,6 +29,12 @@ class DeltaStrikApp(App):
         self.session = SessionManager()
         self.client = OllamaClient(config)
         self.system_prompt = build_system_prompt(config)
+        self.command_handler = CommandHandler(
+            self.session,
+            self.client,
+            build_system_prompt,
+            app=self,
+        )
 
     def compose(self) -> ComposeResult:
         """Declare the TUI layout."""
@@ -39,12 +47,36 @@ class DeltaStrikApp(App):
             yield self.input_bar
             yield self.status_bar
 
+    async def on_mount(self) -> None:
+        """Set initial focus on the input bar when app starts."""
+        self.input_bar.focus()
+
+    async def on_key(self, event: events.Key) -> None:
+        """Handle global key bindings for focus management."""
+        # Press Escape to focus chat view for scrolling
+        if event.key == "escape":
+            if self.chat_view.has_focus:
+                # If already in chat view, return to input
+                self.input_bar.focus()
+            else:
+                # Switch to chat view for scrolling
+                self.chat_view.focus()
+            event.prevent_default()
+            event.stop()
+
     async def on_input_submitted(self, event: Input.Submitted):
         """Handle new user messages."""
         user_text = event.value.strip()
         if not user_text:
             return
 
+        # Add to command history
+        self.input_bar.add_to_history(user_text)
+
+        command_response = self.command_handler.handle(user_text)
+        if command_response:
+            self.chat_view.add_message("system", command_response)
+            return
         # Display user message
         self.chat_view.add_message("user", user_text)
         self.status_bar.update_status("Thinking...")

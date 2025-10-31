@@ -9,9 +9,14 @@
 /* Chat view: takes most of the space */
 ChatView {
     height: 1fr;
-    padding: 1;
+    padding: 1 2;
     border: round $accent;
-    overflow: auto;
+    overflow-y: auto;
+    scrollbar-size: 1 1;
+}
+
+ChatView:focus {
+    border: thick $accent;
 }
 
 /* Input bar: fixed height */
@@ -20,6 +25,10 @@ InputBar {
     border-top: solid $accent;
     padding-left: 1;
     padding-right: 1;
+}
+
+InputBar:focus-within {
+    border-top: double $accent;
 }
 
 /* Status bar: tiny footer */

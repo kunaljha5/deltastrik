@@ -8,14 +8,17 @@ from datetime import datetime
 from textual.widget import Widget
 from textual.reactive import reactive
 from rich.text import Text
+from deltastrik.core.config import load_config
 
+model_config = load_config()
 
 class StatusBar(Widget):
     """
     Displays model name, connection status, and latency.
     """
 
-    model_name: str = reactive("llama3")
+    model_name: str = reactive(model_config.get("model"))
+    connection_status: str = reactive(model_config.get("connection_status"))
     status: str = reactive("Ready")         # e.g. "Ready", "Thinking", "Error"
     latency_ms: int | None = reactive(None) # e.g. 320
 
