@@ -14,7 +14,6 @@ from deltastrik.core.config import load_config
 model: str = load_config().get("model")
 
 
-
 DEFAULT_PERSONA = """
 You are DeltaStrik, an advanced terminal-based AI assistant designed for developers.
 Your responses should be:
@@ -24,6 +23,7 @@ Your responses should be:
 Avoid unnecessary filler phrases. Always stay focused on the user’s question.
 """
 
+
 def build_system_prompt(config: Optional[Dict[str, Any]] = None) -> str:
     """
     Build the system prompt using defaults + any YAML persona overrides.
@@ -31,10 +31,7 @@ def build_system_prompt(config: Optional[Dict[str, Any]] = None) -> str:
     config = config or {}
 
     # Step 1: locate the persona YAML (if provided)
-    persona_path = config.get(
-        "persona_file",
-        os.path.expanduser("~/.deltastrik/system_prompt.yaml")
-    )
+    persona_path = config.get("persona_file", os.path.expanduser("~/.deltastrik/system_prompt.yaml"))
 
     # Step 2: load YAML if it exists, else use default
     persona_text = DEFAULT_PERSONA
@@ -49,9 +46,6 @@ def build_system_prompt(config: Optional[Dict[str, Any]] = None) -> str:
     # Step 3: add runtime context (optional but nice)
     date_info = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
 
-    system_prompt = (
-        f"{persona_text.strip()}\n\n"
-        f"[Context: Running on model '{model}' at {date_info}]\n"
-    )
+    system_prompt = f"{persona_text.strip()}\n\n" f"[Context: Running on model '{model}' at {date_info}]\n"
 
     return system_prompt

@@ -32,7 +32,7 @@ class DeltaStrikApp(App):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.session = SessionManager()
+        self.session = SessionManager(config=self.config)
         self.client = OllamaClient(config)
         self.system_prompt = build_system_prompt(config)
         self.command_handler = CommandHandler(

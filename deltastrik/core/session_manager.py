@@ -16,9 +16,10 @@ class SessionManager:
     Maintains conversation history and context.
     """
 
-    def __init__(self):
+    def __init__(self, config):
         # Chat history follows the typical OpenAI/Ollama format:
         # [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+        self.config = config
         self.history: List[Dict[str, str]] = []
         self.created_at: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
 
@@ -87,10 +88,7 @@ class SessionManager:
             return "⚠️ No history to compact."
 
         # Step 1: Build summarization prompt
-        summary_prompt = (
-            "Summarize the following conversation in a way that retains all essential "
-            "context, goals, and facts for future continuation.\n"
-        )
+        summary_prompt = "Summarize the following conversation in a way that retains all essential " "context, goals, and facts for future continuation.\n"
         if instructions:
             summary_prompt += f"\nAdditional instructions: {instructions}\n"
 
@@ -101,9 +99,7 @@ class SessionManager:
         # Step 2: Call local model to summarize
         ollama = OllamaClient()
         system_prompt = build_system_prompt()
-        summary_response = ollama.generate(
-            system_prompt + "\n\n" + summary_prompt
-        )
+        summary_response = ollama.generate(system_prompt + "\n\n" + summary_prompt)
 
         summary_text = summary_response.strip()
 
