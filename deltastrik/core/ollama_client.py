@@ -61,3 +61,38 @@ class OllamaClient:
         else:
             logger.warning(f"Unexpected Ollama response: {data}")
             return "[No response received from Ollama]"
+
+    def compress_generate(self, system_prompt: str, summary_prompt: str) -> str:
+        """ This generates a context short summary of the Ollama"""
+        messages = self._build_message_payload(system_prompt, summary_prompt, history=None)
+
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "options": {"temperature": self.temperature, "num_predict": self.max_tokens},
+            "stream": self.stream,
+        }
+
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "options": {"temperature": self.temperature, "num_predict": self.max_tokens},
+            "stream": self.stream,
+        }
+
+        try:
+            url_test = urljoin(self.base_url, "api/chat")
+            logger.debug(f"Hitting Ollama at: {url_test}")
+            logger.debug(f"Payload: {payload}")
+
+            response = requests.post(url=url_test, json=payload, timeout=self.timeout)
+            logger.info(f"Ollama response status: {response.status_code}")
+            logger.debug(f"Ollama raw response: {response.text}")
+
+            response.raise_for_status()
+            data = response.json()
+            return self._extract_reply(data)
+
+        except Exception as e:
+            logger.exception("Error contacting Ollama backend")
+            return f"[Error contacting Ollama backend: {e}]"

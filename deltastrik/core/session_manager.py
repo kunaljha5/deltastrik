@@ -88,7 +88,7 @@ class SessionManager:
             return "⚠️ No history to compact."
 
         # Step 1: Build summarization prompt
-        summary_prompt = "Summarize the following conversation in a way that retains all essential " "context, goals, and facts for future continuation.\n"
+        summary_prompt = "Summarize the following conversation in a way that retains all essential context, goals, and facts for future continuation.\n"
         if instructions:
             summary_prompt += f"\nAdditional instructions: {instructions}\n"
 
@@ -97,9 +97,9 @@ class SessionManager:
             summary_prompt += f"{msg['role']}: {msg['content']}\n"
 
         # Step 2: Call local model to summarize
-        ollama = OllamaClient()
+        ollama = OllamaClient(config=self.config)
         system_prompt = build_system_prompt()
-        summary_response = ollama.generate(system_prompt + "\n\n" + summary_prompt)
+        summary_response = ollama.compress_generate(system_prompt ,  summary_prompt)
 
         summary_text = summary_response.strip()
 
