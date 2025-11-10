@@ -63,7 +63,7 @@ class OllamaClient:
             return "[No response received from Ollama]"
 
     def compress_generate(self, system_prompt: str, summary_prompt: str) -> str:
-        """ This generates a context short summary of the Ollama"""
+        """This generates a context short summary of the Ollama"""
         messages = self._build_message_payload(system_prompt, summary_prompt, history=None)
 
         payload = {

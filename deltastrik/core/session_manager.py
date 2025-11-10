@@ -99,12 +99,12 @@ class SessionManager:
         # Step 2: Call local model to summarize
         ollama = OllamaClient(config=self.config)
         system_prompt = build_system_prompt()
-        summary_response = ollama.compress_generate(system_prompt ,  summary_prompt)
+        summary_response = ollama.compress_generate(system_prompt, summary_prompt)
 
         summary_text = summary_response.strip()
 
         # Step 3: Replace full history with summary as system message
         self.history = [{"role": "system", "content": summary_text}]
-        self.save_session()
+        # self.save_session()
 
         return "✅ Conversation compacted. Summary retained in system context."
